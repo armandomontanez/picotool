@@ -1,0 +1,51 @@
+load("package_naming.bzl", "basic_naming")
+load("@rules_pkg//pkg:zip.bzl", "pkg_zip")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_filegroup", "pkg_files", "strip_prefix")
+
+package(default_visibility = ["//visibility:private"])
+
+basic_naming(
+    name = "package_naming",
+    target_os = select({
+        "@platforms//os:windows": "windows",
+        "@platforms//os:macos": "macos",
+        "@platforms//os:linux": "linux",
+        "//conditions:default": "unknown",
+    }),
+    target_cpu = select({
+        "@platforms//cpu:x86_64": "x86_64",
+        "@platforms//cpu:aarch64": "aarch64",
+        "//conditions:default": "unknown",
+    }),
+)
+
+pkg_files(
+    name = "bin",
+    prefix = select({
+        "@platforms//os:windows": None,
+        "//conditions:default": "bin",
+    }),
+    strip_prefix = strip_prefix.from_pkg(),
+    srcs = ["//:picotool"],
+)
+
+pkg_files(
+    name = "lib",
+    prefix = select({
+        "@platforms//os:windows": None,
+        "//conditions:default": "lib",
+    }),
+    strip_prefix = strip_prefix.from_pkg(),
+    srcs = ["@libusb//:libusb"],
+)
+
+pkg_zip(
+    name = "release_package",
+    package_file_name = "picotool-{target_os}-{target_cpu}.zip",
+    package_variables = ":package_naming",
+    srcs = [
+        ":bin",
+        ":lib",
+    ],
+    visibility = ["//visibility:public"],
+)

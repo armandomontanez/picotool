@@ -1,5 +1,7 @@
 module(name = "picotool", version="0.0.1")
 
+bazel_dep(name = "rules_pkg", version = "0.10.1")
+
 # libusb isn't yet in the BCR, this is fetched from:
 #     https://github.com/armandomontanez/bazel-registry
 bazel_dep(name = "libusb", version="0.0.1")
