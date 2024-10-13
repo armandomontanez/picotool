@@ -19,8 +19,8 @@ if (NOT EXISTS ${PICO_SDK_PATH})
 endif ()
 include(${PICO_SDK_PATH}/pico_sdk_version.cmake)
 
-if (PICO_SDK_VERSION_STRING VERSION_LESS "2.0.0")
-    message(FATAL_ERROR "Raspberry Pi Pico SDK version 2.0.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
+if (PICO_SDK_VERSION_STRING VERSION_LESS "2.0.1-develop")
+    message(FATAL_ERROR "Raspberry Pi Pico SDK version 2.0.1-develop (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
 endif()
 
 # Set PICOTOOL_CODE_OTP to compile OTP definitions in - otherwise, they are included from JSON
@@ -66,7 +66,7 @@ if (NOT PICOTOOL_NO_LIBUSB)
             PREFIX xip_ram_perms
             SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/xip_ram_perms
             BINARY_DIR ${CMAKE_BINARY_DIR}/xip_ram_perms
-            CMAKE_ARGS 
+            CMAKE_ARGS
                 "-DCMAKE_MAKE_PROGRAM:FILEPATH=${CMAKE_MAKE_PROGRAM}"
                 "-DPICO_SDK_PATH:FILEPATH=${PICO_SDK_PATH}"
                 "-DUSE_PRECOMPILED:BOOL=${USE_PRECOMPILED}"
@@ -90,7 +90,7 @@ if (NOT PICOTOOL_NO_LIBUSB)
             PREFIX picoboot_flash_id
             SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/picoboot_flash_id
             BINARY_DIR ${CMAKE_BINARY_DIR}/picoboot_flash_id
-            CMAKE_ARGS 
+            CMAKE_ARGS
                 "-DCMAKE_MAKE_PROGRAM:FILEPATH=${CMAKE_MAKE_PROGRAM}"
                 "-DPICO_SDK_PATH:FILEPATH=${PICO_SDK_PATH}"
                 "-DUSE_PRECOMPILED:BOOL=${USE_PRECOMPILED}"
@@ -165,7 +165,7 @@ if (NOT PICOTOOL_NO_LIBUSB)
                 DEPENDS ${GENERATED_JSON}
                 COMMENT "Configuring rp2350.json.h"
                 VERBATIM)
-              
+
     endif()
 endif()
 
@@ -239,8 +239,8 @@ if (NOT PICOTOOL_NO_LIBUSB)
     target_sources(picotool PRIVATE xip_ram_perms.cpp)
     add_dependencies(picotool generate_otp_header xip_ram_perms_elf binary_data)
 endif()
-set(PROJECT_VERSION 2.0.0)
-set(PICOTOOL_VERSION 2.0.0)
+set(PROJECT_VERSION 2.0.1-develop)
+set(PICOTOOL_VERSION 2.0.1-develop)
 set(SYSTEM_VERSION "${CMAKE_SYSTEM_NAME}")
 set(COMPILER_INFO "${CMAKE_C_COMPILER_ID}-${CMAKE_C_COMPILER_VERSION}, ${CMAKE_BUILD_TYPE}")
 target_compile_definitions(picotool PRIVATE
@@ -283,12 +283,12 @@ if (NOT LIBUSB_FOUND)
         message("libUSB is not found - no USB support will be built")
     endif()
     target_compile_definitions(picotool PRIVATE HAS_LIBUSB=0)
-    target_link_libraries(picotool 
+    target_link_libraries(picotool
         picoboot_connection_header)
 else()
     target_include_directories(picotool PRIVATE ${LIBUSB_INCLUDE_DIR})
     target_compile_definitions(picotool PRIVATE HAS_LIBUSB=1)
-    target_link_libraries(picotool 
+    target_link_libraries(picotool
         picoboot_connection_cxx
         ${LIBUSB_LIBRARIES})
 endif()
